@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代农资会员管理系统</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Apple Design System Colors */
+            --primary-color: #34C759; /* Apple Green */
+            --primary-hover: #248A3D;
+            --secondary-color: #5856D6; /* Apple Indigo */
+            --danger-color: #FF3B30; /* Apple Red */
+            --warning-color: #FF9500; /* Apple Orange */
+            --bg-color: #F5F5F7; /* Apple Off-White Background */
+            --card-bg: rgba(255, 255, 255, 0.72);
+            --text-main: #1D1D1F;
+            --text-muted: #86868B;
+            --border-color: rgba(0, 0, 0, 0.05);
+            --card-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.04);
+            --card-hover-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --card-bg: rgba(28, 28, 30, 0.72);
+            --text-main: #F5F5F7;
+            --text-muted: #98989D;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --card-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.5);
+            --card-hover-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+        }
+        [data-theme="dark"] .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        [data-theme="dark"] .nav-link { color: #98989D; }
+        [data-theme="dark"] .nav-link:hover { background-color: rgba(255,255,255,0.1); color: #fff; }
+        [data-theme="dark"] .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        [data-theme="dark"] .form-control::placeholder { color: #888; }
+        [data-theme="dark"] .form-control:focus { background-color: rgba(255, 255, 255, 0.15); color:#fff; }
+        [data-theme="dark"] .table thead th { background-color: rgba(255,255,255,0.05); }
+        [data-theme="dark"] .table-hover tbody tr:hover { background-color: rgba(255,255,255,0.05); }
+        [data-theme="dark"] .btn-outline-secondary { border-color: #555; color: #ccc; }
+        [data-theme="dark"] .btn-outline-secondary:hover { background-color: #333; }
+        [data-theme="dark"] .modal-content { background-color: #1C1C1E; color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+        [data-theme="dark"] .input-group-text { background-color: rgba(255, 255, 255, 0.1); color: #fff; border: none; }
+        [data-theme="dark"] .qp-row { background: rgba(28, 28, 30, 0.9) !important; }
+        [data-theme="dark"] .qp-panel { background: rgba(255, 255, 255, 0.06) !important; }
+
+        /* 深色模式：统一修正文本颜色（覆盖 Bootstrap text-dark 等类） */
+        [data-theme="dark"] body { color: var(--text-main); }
+        [data-theme="dark"] .text-dark,
+        [data-theme="dark"] .text-black,
+        [data-theme="dark"] .text-body {
+            color: var(--text-main) !important;
+        }
+        [data-theme="dark"] .text-muted {
+            color: var(--text-muted) !important;
+        }
+        [data-theme="dark"] .text-black-50 {
+            color: rgba(245, 245, 247, 0.6) !important;
+        }
+        [data-theme="dark"] .border,
+        [data-theme="dark"] .border-top,
+        [data-theme="dark"] .border-bottom,
+        [data-theme="dark"] .border-start,
+        [data-theme="dark"] .border-end {
+            border-color: var(--border-color) !important;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 导航栏 Glassmorphism */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--text-main) !important;
+            font-size: 1.3rem;
+            letter-spacing: -0.02em;
+        }
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-muted);
+            margin: 0 0.4rem;
+            padding: 0.5rem 1rem !important;
+            border-radius: 99px; /* Pill shape */
+            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+            font-size: 0.95rem;
+        }
+        .nav-link:hover {
+            color: var(--text-main);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        .nav-link.active {
+            color: #fff !important;
+            background-color: #1D1D1F; /* Active state is dark */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Apple Style Cards */
+        .card {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
+            background: var(--card-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden; /* For rounded corners on tables */
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: rgba(255,255,255,0.8);
+        }
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Stats Typography */
+        .stat-card-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.25rem;
+        }
+        .stat-card-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.1;
+            letter-spacing: -0.03em; /* Tight tracking like SF Pro Display */
+        }
+
+        /* Buttons: Apple Style */
+        .btn {
+            border-radius: 99px; /* Pill shape */
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+            border: none;
+            transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 6px 16px rgba(52, 199, 89, 0.4);
+        }
+        .btn-success {
+            background-color: var(--primary-color);
+            border: none;
+        }
+        .btn-outline-secondary {
+            border: 1px solid #d1d1d6;
+            color: var(--text-main);
+            background: transparent;
+        }
+        .btn-outline-secondary:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--text-main);
+            border-color: #d1d1d6;
+        }
+
+        /* Input Fields: Apple Style */
+        .form-control {
+            background-color: rgba(118, 118, 128, 0.12); /* Apple Gray Field */
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+        .form-control:focus {
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.15); /* Soft focus ring */
+            color: var(--text-main);
+        }
+        .input-group-text {
+            border: none;
+            background-color: rgba(118, 118, 128, 0.12);
+            color: var(--text-muted);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        /* Animation */
+        .view-section { display: none; animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .view-section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Table Beautification */
+        .table {
+            --bs-table-bg: transparent;
+        }
+        .table thead th {
+            background-color: rgba(0,0,0,0.02);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+        }
+        .table td { 
+            vertical-align: middle; 
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        /* Badges */
+        .badge-debt { 
+            background-color: rgba(255, 59, 48, 0.1); 
+            color: var(--danger-color); 
+            padding: 0.4em 0.8em;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .badge-paid { 
+            background-color: rgba(52, 199, 89, 0.1); 
+            color: var(--primary-color);
+            padding: 0.4em 0.8em;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        
+        /* Modals */
+        .modal-content {
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem;
+        }
+        .modal-body {
+            padding: 2rem;
+        }
+        .modal-footer {
+            border-top: none;
+            padding: 1rem 2rem 2rem 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部导航 -->
+    <nav class="navbar fixed-top navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#" onclick="app.navTo('dashboard')">
+                <div class="d-flex align-items-center justify-content-center me-2 text-white bg-success rounded-circle" style="width: 32px; height: 32px; background: linear-gradient(135deg, #34C759, #30D158);">
+                    <i class="fa-solid fa-leaf" style="font-size: 14px;"></i>
+                </div>
+                <div class="d-flex flex-column">
+                    <span style="font-size: 1.1rem; letter-spacing: -0.5px;">现代农资</span>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <div class="bg-light bg-opacity-50 p-1 rounded-pill d-inline-flex" style="backdrop-filter: blur(10px);">
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item"><a class="nav-link active" href="#" onclick="app.navTo('dashboard')">仪表盘</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="app.navTo('members')">会员</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="app.navTo('products')">商品</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="app.navTo('gifts')">兑换</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" onclick="app.navTo('debts')">欠款</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="btn btn-light rounded-circle shadow-sm me-3 d-none d-lg-block" onclick="app.toggleTheme()" title="切换主题">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+            </button>
+            <button class="btn btn-primary rounded-pill px-3 shadow-sm d-none d-lg-block" data-bs-toggle="modal" data-bs-target="#registerModal">
+                <i class="fa-solid fa-plus me-1"></i> 新会员
+            </button>
+            <button class="btn btn-primary rounded-circle shadow-sm d-lg-none position-absolute" style="top: 12px; right: 60px; width: 40px; height: 40px; padding: 0;" data-bs-toggle="modal" data-bs-target="#registerModal">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px; padding-bottom: 50px;">
+
+        <!-- 1. 仪表盘 Dashboard -->
+        <div id="view-dashboard" class="view-section active">
+            <h2 class="fw-bold mb-4 px-1" style="letter-spacing: -1px;">概览</h2>
+            
+            <div class="row g-4 mb-5">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #007AFF, #0055ff);">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+                                <span class="badge bg-light text-dark rounded-pill">实时</span>
+                            </div>
+                            <div class="stat-card-value mb-1" id="dash-members">0</div>
+                            <div class="stat-card-label">总会员数</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #34C759, #209940);">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                                <span class="badge bg-light text-dark rounded-pill">今日</span>
+                            </div>
+                            <div class="stat-card-value text-success mb-1" id="dash-sales">¥0</div>
+                            <div class="stat-card-label">今日销售额</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #FF3B30, #d62016);">
+                                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                                </div>
+                                <span class="badge bg-light text-dark rounded-pill">未还</span>
+                            </div>
+                            <div class="stat-card-value text-danger mb-1" id="dash-debt">¥0</div>
+                            <div class="stat-card-label">总欠款金额</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background: linear-gradient(135deg, #FF9500, #e08300);">
+                                    <i class="fa-solid fa-gift"></i>
+                                </div>
+                            </div>
+                            <div class="stat-card-value text-warning mb-1" id="dash-gifts">0</div>
+                            <div class="stat-card-label">待处理兑换</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="card h-100">
+                        <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0">最近动态</h5>
+                            <button class="btn btn-sm btn-outline-secondary rounded-pill" style="font-size: 0.75rem;">查看全部</button>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush" id="dash-activity-list">
+                                <!-- JS填充 -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <!-- Quick Actions -->
+                    <div class="card border-0 text-white mb-4" style="background: linear-gradient(145deg, #34C759, #248A3D); overflow: hidden; position: relative;">
+                        <div style="position: absolute; top: -20px; right: -20px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                        <div class="card-body p-4 position-relative">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold mb-0">常用功能</h5>
+                                    <div class="small text-white-50">高效快捷入口</div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-light fw-bold shadow-sm border-0" style="color: #248A3D;" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                    <i class="fa-solid fa-user-plus me-2"></i>注册新会员
+                                </button>
+                                <button class="btn btn-light fw-bold shadow-sm border-0 text-danger" onclick="app.openQuickDebtModal()">
+                                    <i class="fa-solid fa-file-invoice-dollar me-2"></i>快捷记账
+                                </button>
+                                <button class="btn btn-light fw-bold shadow-sm border-0" style="color: #1D1D1F;" onclick="app.openQuickPurchaseModal()">
+                                    <i class="fa-solid fa-cart-shopping me-2"></i>消费记账
+                                </button>
+                                <div class="small text-white-50 mt-1" style="line-height: 1.3;">无需跳转，直接在弹窗内完成开单结算</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div class="card border-0">
+                        <div class="card-header border-0 pb-0">
+                            <h5 class="fw-bold mb-0">数据管理</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-light text-start d-flex align-items-center p-3" onclick="app.backupSystem()">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                        <i class="fa-solid fa-download"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">系统备份</div>
+                                        <div class="small text-muted" style="font-size: 0.75rem;">保存所有数据到本地 (JSON)</div>
+                                    </div>
+                                </button>
+                                
+                                <button class="btn btn-light text-start d-flex align-items-center p-3" onclick="document.getElementById('file-import').click()">
+                                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                        <i class="fa-solid fa-rotate"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">恢复数据</div>
+                                        <div class="small text-muted" style="font-size: 0.75rem;">从备份文件恢复系统</div>
+                                    </div>
+                                </button>
+
+                                <button class="btn btn-light text-start d-flex align-items-center p-3" onclick="app.exportMembersCSV()">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                                        <i class="fa-solid fa-file-csv"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">导出会员表</div>
+                                        <div class="small text-muted" style="font-size: 0.75rem;">生成 Excel 可用的 CSV 表格</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 会员管理 Members -->
+        <div id="view-members" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0" style="letter-spacing: -1px;">会员管理</h2>
+                <button class="btn btn-primary px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#registerModal">
+                    <i class="fa-solid fa-plus me-1"></i> 新增会员
+                </button>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="position-relative">
+                        <i class="fa-solid fa-search position-absolute text-muted" style="top: 50%; left: 1rem; transform: translateY(-50%);"></i>
+                        <input type="text" id="memberSearch" class="form-control ps-5 py-3" placeholder="搜索姓名或手机号..." onkeyup="app.renderMembers()">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">会员</th>
+                                <th>积分余额</th>
+                                <th>累计积分</th>
+                                <th>欠款状态</th>
+                                <th class="text-end pe-4">详情</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberListBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 商品管理 Products -->
+        <div id="view-products" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0" style="letter-spacing: -1px;">商品库</h2>
+                <button class="btn btn-primary shadow-sm" onclick="app.openProductModal()">
+                    <i class="fa-solid fa-plus me-1"></i> 添加商品
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">商品名称</th>
+                                <th>单价</th>
+                                <th>库存状态</th>
+                                <th class="text-end pe-4">管理</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productListBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 积分兑换 Gifts -->
+        <div id="view-gifts" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold mb-0">积分礼品兑换</h4>
+                    <p class="text-muted small mb-0">管理可兑换的礼品及所需积分</p>
+                </div>
+                <button class="btn btn-success" onclick="app.openGiftModal()"><i class="fa-solid fa-plus me-2"></i>添加礼品</button>
+            </div>
+            
+            <div class="row g-4" id="giftListBody">
+                <!-- Grid of gifts -->
+            </div>
+            
+            <style>
+                .gift-card-hover:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+                }
+            </style>
+        </div>
+
+        <!-- 5. 欠款管理 Debts -->
+        <div id="view-debts" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0" style="letter-spacing: -1px;">欠款账单</h2>
+                <div>
+                    <button class="btn btn-outline-secondary me-2 rounded-pill bg-white shadow-sm border-0" onclick="app.exportDebtsCSV()">
+                        <i class="fa-solid fa-file-export me-1"></i> 导出欠款表
+                    </button>
+                    <button class="btn btn-danger rounded-pill shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#quickDebtModal">
+                        <i class="fa-solid fa-plus me-1"></i> 快捷记账
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 p-4 h-100 d-flex flex-row align-items-center">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
+                            <i class="fa-solid fa-money-bill-wave fa-xl"></i>
+                        </div>
+                        <div>
+                            <div class="stat-card-label mb-1">总欠款金额</div>
+                            <div class="stat-card-value text-danger" id="debt-stat-total">¥0.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 p-4 h-100 d-flex flex-row align-items-center">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 60px; height: 60px;">
+                            <i class="fa-solid fa-users fa-xl"></i>
+                        </div>
+                        <div>
+                            <div class="stat-card-label mb-1">欠款人数</div>
+                            <div class="stat-card-value text-dark" id="debt-stat-count">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">欠款人</th>
+                                <th>金额</th>
+                                <th>备注</th>
+                                <th>时间</th>
+                                <th>状态</th>
+                                <th class="text-end pe-4">还款</th>
+                            </tr>
+                        </thead>
+                        <tbody id="debtListBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 会员详情 Detail (Hidden by default) -->
+        <div id="view-member-detail" class="view-section">
+            <div class="d-flex align-items-center mb-4">
+                <button class="btn btn-outline-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" onclick="app.navTo('members')">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div>
+                    <h2 class="fw-bold mb-0" id="detail-name" style="letter-spacing: -1px;">姓名</h2>
+                    <div class="text-muted small mt-1"><i class="fa-solid fa-phone me-1"></i> <span id="detail-phone">手机号</span> <span class="mx-2">•</span> <i class="fa-solid fa-location-dot me-1"></i> <span id="detail-address">地址</span></div>
+                </div>
+                <div class="ms-auto text-end">
+                    <div class="small text-muted uppercase fw-bold" style="letter-spacing: 0.05em;">账户欠款</div>
+                    <div class="fs-2 fw-bold text-danger" id="detail-debt" style="letter-spacing: -1px;">¥0</div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card h-100 border-0" style="background: linear-gradient(135deg, rgba(52, 199, 89, 0.1), rgba(52, 199, 89, 0.05));">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="stat-card-label text-success">可用积分余额</div>
+                                <div class="stat-card-value text-success" id="detail-points">0</div>
+                            </div>
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; opacity: 0.8;">
+                                <i class="fa-solid fa-leaf fa-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 border-0">
+                        <div class="card-body d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="stat-card-label">历史累计积分</div>
+                                <div class="stat-card-value text-dark" id="detail-lifetime">0</div>
+                            </div>
+                            <div class="bg-secondary bg-opacity-10 text-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="fa-solid fa-chart-line fa-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="row g-4 mb-5">
+                <!-- Purchase (清单式多商品开单，面积更大) -->
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-transparent border-0 fw-bold d-flex justify-content-between align-items-center">
+                            <div><i class="fa-solid fa-cart-plus me-2 text-primary"></i>消费/记账</div>
+                            <div class="text-end">
+                                <div class="small text-muted">合计金额</div>
+                                <div class="fw-bold text-primary fs-4" id="purchase-total-display">¥0.00</div>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0">
+                            <!-- 商品搜索（只做筛选，不再“逐个添加”） -->
+                            <div class="mb-3">
+                                <div class="position-relative">
+                                    <i class="fa-solid fa-search position-absolute text-muted" style="top: 50%; left: 1rem; transform: translateY(-50%);"></i>
+                                    <input type="text" id="product-search-input" class="form-control ps-5" placeholder="搜索商品名称，直接在清单里填数量..." oninput="app.renderProductPickList()">
+                                </div>
+                            </div>
+
+                            <!-- 商品清单：多商品同时填写数量 -->
+                            <div class="rounded-4 p-2" style="background: rgba(118, 118, 128, 0.08);">
+                                <div id="purchase-product-picklist" style="max-height: 320px; overflow-y: auto;"></div>
+                            </div>
+
+                            <!-- 折扣 / 欠款 / 结算 -->
+                            <div class="row g-3 mt-3 align-items-center">
+                                <div class="col-md-4">
+                                    <label class="form-label small text-muted mb-1">折扣</label>
+                                    <select id="purchase-discount" class="form-select" onchange="app.updatePurchaseTotal()">
+                                        <option value="1">无折扣</option>
+                                        <option value="0.98">98折</option>
+                                        <option value="0.97">97折</option>
+                                        <option value="0.96">96折</option>
+                                        <option value="0.95">95折</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" id="purchase-is-debt">
+                                        <label class="form-check-label text-danger fw-bold" for="purchase-is-debt">记为欠款 (赊账)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-primary px-5 mt-4" onclick="app.actionPurchase()">
+                                        <i class="fa-solid fa-check me-2"></i>确认结算
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repay -->
+                <div class="col-lg-3">
+                    <div class="card h-100">
+                        <div class="card-header bg-transparent border-0 fw-bold"><i class="fa-solid fa-hand-holding-dollar me-2 text-success"></i>欠款还款</div>
+                        <div class="card-body pt-0">
+                            <form id="form-repay" onsubmit="event.preventDefault(); app.actionRepay();">
+                                <div class="mb-3">
+                                    <label class="small text-muted mb-1">还款金额</label>
+                                    <input type="number" id="repay-amount" class="form-control" required step="0.01" min="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted mb-1">备注</label>
+                                    <input type="text" id="repay-desc" class="form-control" placeholder="如: 现金还款">
+                                </div>
+                                <button type="submit" class="btn btn-outline-success w-100">确认还款</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Points -->
+                <div class="col-lg-3">
+                    <div class="card h-100">
+                        <div class="card-header bg-transparent border-0 fw-bold"><i class="fa-solid fa-star me-2 text-warning"></i>积分调整</div>
+                        <div class="card-body pt-0">
+                            <form id="form-points" onsubmit="event.preventDefault(); app.actionAdjustPoints();">
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <input type="number" id="adjust-points" class="form-control" placeholder="+/- 分数" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" id="adjust-reason" class="form-control" placeholder="原因" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-outline-warning w-100 text-dark">调整积分</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tables -->
+            <div class="card">
+                <div class="card-header bg-transparent border-bottom pt-3 pb-0 px-3">
+                    <ul class="nav nav-pills card-header-pills mb-2 gap-2" id="detailTabs" role="tablist">
+                        <li class="nav-item" role="presentation"><button class="nav-link active rounded-pill px-4" data-bs-toggle="tab" data-bs-target="#tab-orders" type="button">消费记录</button></li>
+                        <li class="nav-item" role="presentation"><button class="nav-link rounded-pill px-4" data-bs-toggle="tab" data-bs-target="#tab-debts" type="button">欠款记录</button></li>
+                        <li class="nav-item" role="presentation"><button class="nav-link rounded-pill px-4" data-bs-toggle="tab" data-bs-target="#tab-points" type="button">积分流水</button></li>
+                    </ul>
+                </div>
+                <div class="card-body p-0">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="tab-orders">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th class="ps-4">时间</th><th>内容</th><th>金额</th><th class="pe-4 text-end">获得积分</th></tr></thead>
+                                    <tbody id="detail-orders-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab-debts">
+                             <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th class="ps-4">时间</th><th>内容</th><th>金额</th><th class="pe-4 text-end">状态</th></tr></thead>
+                                    <tbody id="detail-debts-body"></tbody>
+                                </table>
+                             </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab-points">
+                             <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead><tr><th class="ps-4">时间</th><th>原因</th><th class="pe-4 text-end">变动</th></tr></thead>
+                                    <tbody id="detail-points-body"></tbody>
+                                </table>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modals -->
+    <!-- Member Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">新会员注册</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-register">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold text-uppercase">基本信息</label>
+                            <input type="text" id="reg-name" class="form-control mb-2" placeholder="姓名 (必填)" required>
+                            <input type="tel" id="reg-phone" class="form-control mb-2" placeholder="手机号 (必填)" required pattern="[0-9]{11}">
+                            <input type="text" id="reg-address" class="form-control" placeholder="详细地址 (必填)" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold text-uppercase">详细资料 (选填)</label>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <input type="text" id="reg-birthday" class="form-control" placeholder="生日 (如 1990.01.01)">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" id="reg-idcard" class="form-control" placeholder="身份证号">
+                                </div>
+                            </div>
+                            <textarea id="reg-remark" class="form-control" rows="2" placeholder="备注信息..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary w-100" onclick="app.addMember()">完成注册</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product/Gift Modal (Shared/Dynamic) -->
+    <div class="modal fade" id="itemModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="itemModalTitle">添加项目</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-item">
+                        <input type="hidden" id="item-type"> <!-- 'product' or 'gift' -->
+                        <div class="mb-3"><label class="form-label">名称</label><input type="text" id="item-name" class="form-control" required></div>
+                        <div class="mb-3" id="item-price-group"><label class="form-label">价格 (元)</label><input type="number" id="item-price" class="form-control" step="0.01"></div>
+                        <div class="mb-3" id="item-points-group"><label class="form-label">所需积分</label><input type="number" id="item-points" class="form-control"></div>
+                        <div class="mb-3"><label class="form-label">库存</label><input type="number" id="item-stock" class="form-control" value="999"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary w-100" onclick="app.saveItem()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Debt Modal -->
+    <div class="modal fade" id="quickDebtModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">快捷记账 (欠款)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-quick-debt" onsubmit="event.preventDefault(); app.saveQuickDebt();">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold uppercase">会员姓名或手机号</label>
+                            <input type="text" id="qdebt-identity" class="form-control" required placeholder="输入姓名或手机号搜索..." list="member-datalist" autocomplete="off">
+                            <datalist id="member-datalist"></datalist>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold uppercase">欠款金额</label>
+                            <div class="input-group">
+                                <span class="input-group-text border-0 bg-light">¥</span>
+                                <input type="number" id="qdebt-amount" class="form-control" required step="0.01" min="0.01">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted fw-bold uppercase">备注 / 商品</label>
+                            <input type="text" id="qdebt-desc" class="form-control" placeholder="如: 赊账购买化肥" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 rounded-pill py-2 fw-bold mt-2">确认记账</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Purchase Modal (In-Modal Checkout) -->
+    <div class="modal fade" id="quickPurchaseModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">消费记账</h5>
+                        <div class="small text-muted mt-1">无需跳转会员详情页，直接完成多商品开单与结算</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Step 1: 选择会员 -->
+                    <form id="form-quick-purchase" class="mb-3" onsubmit="event.preventDefault(); app.setQuickPurchaseMember();">
+                        <label class="form-label small text-muted fw-bold uppercase">会员姓名或手机号</label>
+                        <div class="d-flex gap-2">
+                            <input type="text" id="qpur-identity" class="form-control" required placeholder="输入姓名或手机号搜索..." list="member-purchase-datalist" autocomplete="off">
+                            <datalist id="member-purchase-datalist"></datalist>
+                            <button type="submit" class="btn btn-primary px-4">确认会员</button>
+                        </div>
+                        <div class="small text-muted mt-2">提示：可输入 <span class="fw-bold">姓名</span> 或 <span class="fw-bold">手机号</span>，也可从下拉建议中选择。</div>
+                    </form>
+
+                    <!-- Selected Member Info -->
+                    <div id="quick-purchase-member-info" class="rounded-4 p-3 mb-4" style="background: rgba(118, 118, 128, 0.08); display: none;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="fw-bold text-dark" id="quick-purchase-member-name">-</div>
+                                <div class="small text-muted" id="quick-purchase-member-phone">-</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="small text-muted">当前积分</div>
+                                <div class="fw-bold text-success" id="quick-purchase-member-points">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: 清单式多商品开单 -->
+                    <div id="quick-purchase-panel" style="opacity: .55; pointer-events: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="fw-bold text-dark"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>商品清单</div>
+                            <div class="text-end">
+                                <div class="small text-muted">合计金额</div>
+                                <div class="fw-bold text-primary fs-4" id="quick-purchase-total-display">¥0.00</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="position-relative">
+                                <i class="fa-solid fa-search position-absolute text-muted" style="top: 50%; left: 1rem; transform: translateY(-50%);"></i>
+                                <input type="text" id="quick-product-search-input" class="form-control ps-5" placeholder="搜索商品名称，直接在清单里填数量..." oninput="app.renderQuickPurchasePickList()">
+                            </div>
+                        </div>
+
+                        <div class="rounded-4 p-2 mb-3 qp-panel" style="background: rgba(118, 118, 128, 0.08);">
+                            <div id="quick-purchase-product-picklist" style="max-height: 320px; overflow-y: auto;"></div>
+                        </div>
+
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted mb-1">折扣</label>
+                                <select id="quick-purchase-discount" class="form-select" onchange="app.updateQuickPurchaseTotal()">
+                                    <option value="1">无折扣</option>
+                                    <option value="0.98">98折</option>
+                                    <option value="0.97">97折</option>
+                                    <option value="0.96">96折</option>
+                                    <option value="0.95">95折</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="quick-purchase-is-debt">
+                                    <label class="form-check-label text-danger fw-bold" for="quick-purchase-is-debt">记为欠款 (赊账)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button type="button" class="btn btn-primary px-5 mt-4" onclick="app.confirmQuickPurchase()">
+                                    <i class="fa-solid fa-check me-2"></i>确认结算
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden File Input for Import -->
+    <input type="file" id="file-import" accept=".json" style="display: none;" onchange="app.importData(this)">
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1060;">
+        <div id="liveToast" class="toast align-items-center text-dark bg-white border-0 shadow-lg" role="alert" style="border-radius: 50px; min-width: 300px;">
+            <div class="d-flex align-items-center px-2">
+                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center m-2" style="width: 24px; height: 24px;">
+                    <i class="fa-solid fa-check" style="font-size: 12px;"></i>
+                </div>
+                <div class="toast-body fw-medium" id="toast-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const app = {
+            data: {
+                members: [],
+                products: [], // {id, name, price, stock}
+                gifts: [],    // {id, name, points, stock}
+                orders: [],   // {id, member_id, amount, desc, is_debt, timestamp}
+                debts: [],
+                pointsLogs: [],
+                currentMemberId: null,
+                // 会员详情页消费开单：用 {productId: qty} 记录多商品数量（便于“同时填写多个商品”）
+                currentCart: {},
+                // 仪表盘-消费记账（弹窗内开单）：独立状态，避免与详情页互相干扰
+                quickPurchase: {
+                    memberId: null,
+                    cart: {} // {productId: qty}
+                }
+            },
+
+            init() {
+                // Load Theme
+                const theme = localStorage.getItem('theme');
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+
+                // Load or Seed
+                const d = localStorage.getItem('agri_data_v2');
+                if (d) {
+                    this.data = JSON.parse(d);
+                } else {
+                    this.seedData();
+                }
+                this.navTo('dashboard');
+            },
+
+            toggleTheme() {
+                const html = document.documentElement;
+                if (html.getAttribute('data-theme') === 'dark') {
+                    html.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            },
+
+            seedData() {
+                this.data.members = [
+                    { id: 1, name: "张三", phone: "13800138000", address: "幸福村1组", points: 150, total_points: 500, debt: 0, created_at: new Date().toISOString() },
+                    { id: 2, name: "李四", phone: "13900139000", address: "向阳社区", points: 20, total_points: 20, debt: 120.50, created_at: new Date().toISOString() }
+                ];
+                this.data.products = [
+                    { id: 1, name: "复合肥 (50kg)", price: 180, stock: 50 },
+                    { id: 2, name: "尿素", price: 120, stock: 100 },
+                    { id: 3, name: "除草剂", price: 35, stock: 200 }
+                ];
+                this.data.gifts = [
+                    { id: 1, name: "不锈钢盆", points: 100, stock: 20 },
+                    { id: 2, name: "洗衣液", points: 200, stock: 15 },
+                    { id: 3, name: "电热水壶", points: 1000, stock: 5 }
+                ];
+                this.data.debts = [
+                    { id: 1, member_id: 2, amount: 120.50, desc: "购买 尿素", status: 'unpaid', timestamp: new Date().toISOString() }
+                ];
+                this.save();
+            },
+
+            save() {
+                localStorage.setItem('agri_data_v2', JSON.stringify(this.data));
+                this.refreshCurrentView();
+            },
+
+            navTo(viewId) {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+                
+                // Active Nav State
+                const navMap = { 'dashboard':0, 'members':1, 'products':2, 'gifts':3, 'debts':4 };
+                if (navMap[viewId] !== undefined) {
+                    document.querySelectorAll('.nav-link')[navMap[viewId]].classList.add('active');
+                    document.getElementById(`view-${viewId}`).classList.add('active');
+                } else {
+                    // Detail view
+                    document.getElementById(`view-${viewId}`).classList.add('active');
+                }
+
+                // Render specific view data
+                if (viewId === 'dashboard') this.renderDashboard();
+                if (viewId === 'members') this.renderMembers();
+                if (viewId === 'products') this.renderProducts();
+                if (viewId === 'gifts') this.renderGifts();
+                if (viewId === 'debts') this.renderDebts();
+                if (viewId === 'member-detail' && this.data.currentMemberId) this.renderDetail();
+            },
+
+            refreshCurrentView() {
+                const activeView = document.querySelector('.view-section.active').id.replace('view-', '');
+                this.navTo(activeView);
+            },
+
+            // --- Dashboard Logic ---
+            renderDashboard() {
+                document.getElementById('dash-members').innerText = this.data.members.length;
+                
+                // Calc Today Sales
+                const today = new Date().toISOString().split('T')[0];
+                const todayOrders = this.data.orders.filter(o => o.timestamp.startsWith(today));
+                const sales = todayOrders.reduce((sum, o) => sum + parseFloat(o.amount), 0);
+                document.getElementById('dash-sales').innerText = '¥' + sales.toFixed(2);
+
+                // Calc Total Debt
+                const totalDebt = this.data.members.reduce((sum, m) => sum + (m.debt || 0), 0);
+                document.getElementById('dash-debt').innerText = '¥' + totalDebt.toFixed(2);
+
+                document.getElementById('dash-gifts').innerText = '0'; // Placeholder
+
+                // Activity List (Mix of orders and logs)
+                const list = document.getElementById('dash-activity-list');
+                list.innerHTML = '';
+                const activities = [
+                    ...this.data.orders.map(o => ({type: 'order', ...o})),
+                    ...this.data.debts.filter(d=>d.status==='unpaid').map(d => ({type: 'debt', ...d}))
+                ].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5);
+
+                activities.forEach(item => {
+                    const m = this.data.members.find(x => x.id === item.member_id);
+                    const name = m ? m.name : '未知';
+                    let html = '';
+                    if (item.type === 'order') {
+                        html = `<li class="list-group-item px-3 py-3 border-0 d-flex justify-content-between align-items-center mb-2 rounded-3" style="background: rgba(0,0,0,0.02);">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    <i class="fa-solid fa-cart-shopping small"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">${name}</div>
+                                    <div class="text-muted small">消费了 ¥${item.amount}</div>
+                                </div>
+                            </div>
+                            <span class="badge bg-light text-secondary rounded-pill fw-normal border">${new Date(item.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                        </li>`;
+                    } else {
+                        html = `<li class="list-group-item px-3 py-3 border-0 d-flex justify-content-between align-items-center mb-2 rounded-3" style="background: rgba(255, 59, 48, 0.05);">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-danger bg-opacity-10 text-danger rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    <i class="fa-solid fa-file-invoice-dollar small"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">${name}</div>
+                                    <div class="text-danger small">新增欠款 ¥${item.amount}</div>
+                                </div>
+                            </div>
+                            <span class="badge bg-light text-secondary rounded-pill fw-normal border">${new Date(item.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                        </li>`;
+                    }
+                    list.innerHTML += html;
+                });
+            },
+
+            // --- Member Logic ---
+            renderMembers() {
+                const term = document.getElementById('memberSearch').value;
+                const tbody = document.getElementById('memberListBody');
+                tbody.innerHTML = '';
+                
+                const list = this.data.members.filter(m => !term || m.name.includes(term) || m.phone.includes(term));
+                list.forEach(m => {
+                    tbody.innerHTML += `
+                    <tr style="cursor: pointer;" onclick="app.showDetail(${m.id})">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3 text-secondary fw-bold" style="width: 40px; height: 40px; font-size: 0.9rem;">
+                                    ${m.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">${m.name}</div>
+                                    <div class="small text-muted">${m.phone}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-success fw-bold" style="font-size: 1rem;">${m.points}</td>
+                        <td class="text-muted">${m.total_points}</td>
+                        <td>${m.debt > 0 ? `<span class="badge badge-debt">¥${m.debt.toFixed(2)}</span>` : '<span class="badge bg-light text-muted border">无欠款</span>'}</td>
+                        <td class="text-end pe-4">
+                            <i class="fa-solid fa-chevron-right text-muted"></i>
+                        </td>
+                    </tr>`;
+                });
+            },
+
+            addMember() {
+                const name = document.getElementById('reg-name').value;
+                const phone = document.getElementById('reg-phone').value;
+                const address = document.getElementById('reg-address').value;
+                const birthday = document.getElementById('reg-birthday').value;
+                const idcard = document.getElementById('reg-idcard').value;
+                const remark = document.getElementById('reg-remark').value;
+                
+                if(!name || !phone || !address) return alert('姓名、手机号和地址为必填项');
+
+                this.data.members.push({
+                    id: Date.now(),
+                    name, phone, address, birthday, idcard, remark,
+                    points: 0, total_points: 0, debt: 0,
+                    created_at: new Date().toISOString()
+                });
+                this.save();
+                bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+                document.getElementById('form-register').reset();
+                this.showToast('会员注册成功');
+            },
+
+            showDetail(id) {
+                this.data.currentMemberId = id;
+                this.navTo('member-detail');
+            },
+
+            renderDetail() {
+                const m = this.data.members.find(x => x.id === this.data.currentMemberId);
+                if (!m) return;
+
+                // Init picklist quantities (清单式：多商品同时填写数量)
+                this.data.currentCart = {};
+                this.renderProductPickList();
+
+                // Reset discount
+                const discountEl = document.getElementById('purchase-discount');
+                if (discountEl) discountEl.value = '1';
+                this.updatePurchaseTotal();
+
+                document.getElementById('detail-name').innerText = m.name;
+                document.getElementById('detail-phone').innerText = m.phone;
+                
+                // Enhanced details
+                let extraInfo = `<i class="fa-solid fa-location-dot me-1"></i> ${m.address || '无地址'}`;
+                if (m.birthday) extraInfo += ` <span class="mx-2 text-black-50">•</span> <i class="fa-solid fa-cake-candles me-1"></i> ${m.birthday}`;
+                if (m.idcard) extraInfo += ` <span class="mx-2 text-black-50">•</span> <i class="fa-solid fa-id-card me-1"></i> ${m.idcard}`;
+                if (m.remark) extraInfo += `<div class="mt-2 pt-2 border-top small text-muted"><i class="fa-solid fa-note-sticky me-1"></i> 备注: ${m.remark}</div>`;
+                
+                document.getElementById('detail-address').innerHTML = extraInfo;
+                document.getElementById('detail-debt').innerText = `¥${(m.debt||0).toFixed(2)}`;
+                document.getElementById('detail-points').innerText = m.points;
+                document.getElementById('detail-lifetime').innerText = m.total_points;
+
+                // Tables
+                // 1. Orders
+                const oBody = document.getElementById('detail-orders-body');
+                oBody.innerHTML = '';
+                this.data.orders.filter(x => x.member_id === m.id).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp))
+                    .forEach(o => {
+                        oBody.innerHTML += `<tr>
+                            <td class="ps-4">${new Date(o.timestamp).toLocaleDateString()}</td>
+                            <td class="text-dark fw-medium">${o.desc || '普通消费'}</td>
+                            <td>¥${o.amount}</td>
+                            <td class="pe-4 text-end text-success fw-bold">+${Math.floor(o.amount/10)}</td>
+                        </tr>`;
+                    });
+
+                // 2. Debts
+                const dBody = document.getElementById('detail-debts-body');
+                dBody.innerHTML = '';
+                this.data.debts.filter(x => x.member_id === m.id).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp))
+                    .forEach(d => {
+                        const statusBadge = d.status === 'unpaid' ? '<span class="badge badge-debt">未还</span>' : '<span class="badge badge-paid">已还</span>';
+                        dBody.innerHTML += `<tr>
+                            <td class="ps-4">${new Date(d.timestamp).toLocaleDateString()}</td>
+                            <td class="text-dark fw-medium">${d.desc}</td>
+                            <td>¥${d.amount}</td>
+                            <td class="pe-4 text-end">${statusBadge}</td>
+                        </tr>`;
+                    });
+
+                // 3. Points
+                const pBody = document.getElementById('detail-points-body');
+                pBody.innerHTML = '';
+                this.data.pointsLogs.filter(x => x.member_id === m.id).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp))
+                    .forEach(l => {
+                         pBody.innerHTML += `<tr>
+                            <td class="ps-4">${new Date(l.timestamp).toLocaleDateString()}</td>
+                            <td class="text-dark fw-medium">${l.reason}</td>
+                            <td class="pe-4 text-end ${l.change > 0 ? 'text-success' : 'text-danger'} fw-bold">${l.change>0?'+':''}${l.change}</td>
+                        </tr>`;
+                    });
+            },
+
+            // =========================
+            // 会员详情页：清单式开单（多商品同时填数量）
+            // =========================
+            renderProductPickList() {
+                const host = document.getElementById('purchase-product-picklist');
+                if (!host) return;
+
+                const term = (document.getElementById('product-search-input')?.value || '').trim().toLowerCase();
+                host.innerHTML = '';
+
+                const filtered = this.data.products
+                    .filter(p => !term || p.name.toLowerCase().includes(term))
+                    .sort((a,b) => a.name.localeCompare(b.name, 'zh-CN'));
+
+                if (filtered.length === 0) {
+                    host.innerHTML = `<div class="text-center text-muted py-4">未找到商品</div>`;
+                    return;
+                }
+
+                filtered.forEach(p => {
+                    const qty = this.data.currentCart[p.id] || 0;
+                    const disabled = p.stock <= 0;
+                    const stockHint = disabled ? `<span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">缺货</span>` : `<span class="badge bg-success bg-opacity-10 text-success rounded-pill">库存 ${p.stock}</span>`;
+
+                    host.innerHTML += `
+                        <div class="d-flex align-items-center justify-content-between p-3 mb-2 rounded-4" style="background: rgba(255,255,255,0.7); border: 1px solid var(--border-color);">
+                            <div style="min-width: 0;" class="pe-3">
+                                <div class="fw-bold text-dark text-truncate">${p.name}</div>
+                                <div class="small text-muted">¥${p.price.toFixed(2)} <span class="mx-2">•</span> ${stockHint}</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-sm btn-outline-secondary" style="padding: 0.25rem 0.7rem;" onclick="app.adjustPickQty(${p.id}, -1)" ${disabled ? 'disabled' : ''}>-</button>
+                                <input 
+                                    id="pick-qty-${p.id}"
+                                    class="form-control form-control-sm text-center" 
+                                    style="width: 72px; padding: 0.45rem 0.5rem;" 
+                                    inputmode="numeric" 
+                                    type="number" 
+                                    min="0" 
+                                    max="${p.stock}" 
+                                    value="${qty}" 
+                                    ${disabled ? 'disabled' : ''}
+                                    oninput="app.setPickQty(${p.id}, this.value)">
+                                <button class="btn btn-sm btn-outline-secondary" style="padding: 0.25rem 0.7rem;" onclick="app.adjustPickQty(${p.id}, 1)" ${disabled ? 'disabled' : ''}>+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                this.updatePurchaseTotal();
+            },
+
+            setPickQty(pid, val) {
+                const p = this.data.products.find(x => x.id === pid);
+                if (!p) return;
+
+                let qty = parseInt(val);
+                if (isNaN(qty) || qty < 0) qty = 0;
+                if (qty > p.stock) qty = p.stock;
+
+                if (qty === 0) delete this.data.currentCart[pid];
+                else this.data.currentCart[pid] = qty;
+
+                this.updatePurchaseTotal();
+            },
+
+            adjustPickQty(pid, delta) {
+                const p = this.data.products.find(x => x.id === pid);
+                if (!p) return;
+
+                const current = this.data.currentCart[pid] || 0;
+                let next = current + delta;
+                if (next < 0) next = 0;
+                if (next > p.stock) next = p.stock;
+
+                if (next === 0) delete this.data.currentCart[pid];
+                else this.data.currentCart[pid] = next;
+
+                // 仅更新当前行输入框（避免全量重绘带来滚动跳动）
+                const host = document.getElementById('purchase-product-picklist');
+                if (host) {
+                    const input = host.querySelector(`input[oninput^="app.setPickQty(${pid}"]`);
+                    if (input) input.value = next;
+                }
+
+                this.updatePurchaseTotal();
+            },
+
+            calcRawSubtotalFromCart() {
+                let subtotal = 0;
+                for (const [pidStr, qty] of Object.entries(this.data.currentCart || {})) {
+                    const pid = parseInt(pidStr);
+                    const p = this.data.products.find(x => x.id === pid);
+                    if (!p) continue;
+                    subtotal += p.price * (parseInt(qty) || 0);
+                }
+                return subtotal;
+            },
+
+            updatePurchaseTotal() {
+                const totalDisplay = document.getElementById('purchase-total-display');
+                if (!totalDisplay) return;
+
+                const discountEl = document.getElementById('purchase-discount');
+                const discount = discountEl ? parseFloat(discountEl.value) : 1;
+
+                const subtotal = this.calcRawSubtotalFromCart();
+                const finalTotal = subtotal * discount;
+
+                if (discount < 1 && subtotal > 0) {
+                    totalDisplay.innerHTML = `¥${finalTotal.toFixed(2)} <span class="text-muted small text-decoration-line-through ms-2">¥${subtotal.toFixed(2)}</span>`;
+                } else {
+                    totalDisplay.innerHTML = `¥${finalTotal.toFixed(2)}`;
+                }
+            },
+
+            actionPurchase() {
+                const m = this.data.members.find(x => x.id === this.data.currentMemberId);
+                if (!m) return;
+
+                const cart = this.data.currentCart || {};
+                const entries = Object.entries(cart).filter(([,qty]) => (parseInt(qty)||0) > 0);
+                if (entries.length === 0) return alert('请至少选择一个商品并填写数量');
+
+                const isDebt = document.getElementById('purchase-is-debt').checked;
+                const discountEl = document.getElementById('purchase-discount');
+                const discount = discountEl ? parseFloat(discountEl.value) : 1;
+
+                // 校验库存 + 计算金额 + 生成描述
+                let subtotal = 0;
+                const descArr = [];
+
+                for (const [pidStr, qtyVal] of entries) {
+                    const pid = parseInt(pidStr);
+                    const qty = parseInt(qtyVal) || 0;
+                    const p = this.data.products.find(x => x.id === pid);
+                    if (!p) continue;
+
+                    if (qty > p.stock) {
+                        return alert(`${p.name} 库存不足（库存:${p.stock}，选择:${qty}）`);
+                    }
+
+                    subtotal += p.price * qty;
+                    descArr.push(`${p.name}x${qty}`);
+                }
+
+                const totalAmt = subtotal * discount;
+                let desc = descArr.join(', ');
+                if (discount < 1) desc += ` (${Math.round(discount * 100)}折)`;
+
+                // 扣减库存（确认结算才扣）
+                for (const [pidStr, qtyVal] of entries) {
+                    const pid = parseInt(pidStr);
+                    const qty = parseInt(qtyVal) || 0;
+                    const p = this.data.products.find(x => x.id === pid);
+                    if (p) p.stock -= qty;
+                }
+
+                const points = Math.floor(totalAmt / 10);
+                m.points += points;
+                m.total_points += points;
+                this.data.pointsLogs.push({member_id: m.id, change: points, reason: '消费获赠', timestamp: new Date().toISOString()});
+
+                if (isDebt) {
+                    m.debt = (m.debt || 0) + totalAmt;
+                    this.data.debts.push({
+                        id: Date.now(),
+                        member_id: m.id,
+                        amount: totalAmt,
+                        desc: desc,
+                        status: 'unpaid',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                this.data.orders.push({
+                    id: Date.now(),
+                    member_id: m.id,
+                    amount: totalAmt,
+                    desc: desc,
+                    is_debt: isDebt,
+                    timestamp: new Date().toISOString()
+                });
+
+                // 结算后清空当前选择
+                this.data.currentCart = {};
+
+                this.save();
+                this.renderDetail();
+                this.showToast(`结算成功！实收 ¥${totalAmt.toFixed(2)}，获得 ${points} 积分`);
+            },
+
+            actionRepay() {
+                const amt = parseFloat(document.getElementById('repay-amount').value);
+                const desc = document.getElementById('repay-desc').value;
+                const m = this.data.members.find(x => x.id === this.data.currentMemberId);
+
+                if (!amt || amt <= 0) return;
+                if ((m.debt || 0) <= 0) return alert('该会员没有欠款');
+
+                m.debt = Math.max(0, m.debt - amt);
+                
+                // Find oldest unpaid debts and mark as paid (simplified logic)
+                let remainingRepay = amt;
+                this.data.debts.filter(d => d.member_id === m.id && d.status === 'unpaid').forEach(d => {
+                    if (remainingRepay >= d.amount) {
+                        d.status = 'paid';
+                        remainingRepay -= d.amount;
+                    } else if (remainingRepay > 0) {
+                        // Partial payment - complicated, so we just log a negative debt entry effectively
+                        // For simplicity in this UI, we just update the total debt number on member
+                        // and mark specific debt items as paid only if fully covered.
+                        // In a real app, we'd split the debt record. 
+                    }
+                });
+
+                this.data.debts.push({
+                    id: Date.now(),
+                    member_id: m.id,
+                    amount: -amt, // Negative for repayment log
+                    desc: `[还款] ${desc || ''}`,
+                    status: 'paid',
+                    timestamp: new Date().toISOString()
+                });
+
+                this.save();
+                document.getElementById('form-repay').reset();
+                this.showToast('还款成功');
+            },
+
+            actionAdjustPoints() {
+                const pts = parseInt(document.getElementById('adjust-points').value);
+                const reason = document.getElementById('adjust-reason').value;
+                const m = this.data.members.find(x => x.id === this.data.currentMemberId);
+                
+                if (!pts || !reason) return;
+
+                m.points += pts;
+                if (pts > 0) m.total_points += pts;
+                
+                this.data.pointsLogs.push({
+                    member_id: m.id,
+                    change: pts,
+                    reason: `[手动] ${reason}`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                this.save();
+                document.getElementById('form-points').reset();
+                this.showToast('积分调整成功');
+            },
+
+            // --- Product/Gift Management ---
+            openProductModal() {
+                document.getElementById('itemModalTitle').innerText = "添加商品";
+                document.getElementById('item-type').value = 'product';
+                document.getElementById('item-price-group').style.display = 'block';
+                document.getElementById('item-points-group').style.display = 'none';
+                document.getElementById('form-item').reset();
+                new bootstrap.Modal(document.getElementById('itemModal')).show();
+            },
+
+            openGiftModal() {
+                document.getElementById('itemModalTitle').innerText = "添加兑换礼品";
+                document.getElementById('item-type').value = 'gift';
+                document.getElementById('item-price-group').style.display = 'none';
+                document.getElementById('item-points-group').style.display = 'block';
+                document.getElementById('form-item').reset();
+                new bootstrap.Modal(document.getElementById('itemModal')).show();
+            },
+
+            saveItem() {
+                const type = document.getElementById('item-type').value;
+                const name = document.getElementById('item-name').value;
+                const stock = parseInt(document.getElementById('item-stock').value);
+                
+                if (type === 'product') {
+                    const price = parseFloat(document.getElementById('item-price').value);
+                    this.data.products.push({ id: Date.now(), name, price, stock });
+                } else {
+                    const points = parseInt(document.getElementById('item-points').value);
+                    this.data.gifts.push({ id: Date.now(), name, points, stock });
+                }
+                
+                this.save();
+                bootstrap.Modal.getInstance(document.getElementById('itemModal')).hide();
+                this.showToast('添加成功');
+            },
+
+            renderProducts() {
+                const tbody = document.getElementById('productListBody');
+                tbody.innerHTML = '';
+                this.data.products.forEach(p => {
+                    let stockBadge = '';
+                    if(p.stock < 10) stockBadge = `<span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">库存紧张 ${p.stock}</span>`;
+                    else stockBadge = `<span class="badge bg-success bg-opacity-10 text-success rounded-pill">充足 ${p.stock}</span>`;
+
+                    tbody.innerHTML += `<tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px;">
+                                    <i class="fa-solid fa-box"></i>
+                                </div>
+                                <span class="fw-bold text-dark">${p.name}</span>
+                            </div>
+                        </td>
+                        <td class="fw-medium">¥${p.price.toFixed(2)}</td>
+                        <td>${stockBadge}</td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-outline-danger border-0" onclick="app.deleteItem('product', ${p.id})">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+            },
+
+            renderGifts() {
+                const div = document.getElementById('giftListBody');
+                div.innerHTML = '';
+                this.data.gifts.forEach(g => {
+                    div.innerHTML += `
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 border-0 text-center p-4 gift-card-hover" style="transition: all 0.3s ease;">
+                            <div class="bg-warning text-white rounded-circle mx-auto d-flex align-items-center justify-content-center mb-4 shadow-sm" style="width: 64px; height: 64px; background: linear-gradient(135deg, #FF9500, #ffaa33);">
+                                <i class="fa-solid fa-gift fa-xl"></i>
+                            </div>
+                            <h5 class="fw-bold mb-1">${g.name}</h5>
+                            <div class="text-success fw-bold fs-4 mb-1">${g.points} <span class="fs-6 text-muted fw-normal">积分</span></div>
+                            <div class="text-muted small mb-4 bg-light rounded-pill py-1 px-3 d-inline-block">剩余库存: ${g.stock}</div>
+                            <button class="btn btn-primary w-100 shadow-sm" onclick="app.redeemGift(${g.id})">立即兑换</button>
+                        </div>
+                    </div>`;
+                });
+            },
+
+            redeemGift(giftId) {
+                // For simplicity, asks for Member ID or Phone.
+                // In real app, you might select member first.
+                // Here, we'll prompt for member phone
+                const phone = prompt("请输入会员手机号进行兑换:");
+                if (!phone) return;
+                
+                const m = this.data.members.find(x => x.phone === phone);
+                if (!m) return alert('未找到会员');
+                
+                const gift = this.data.gifts.find(x => x.id === giftId);
+                
+                if (m.points < gift.points) return alert('积分不足');
+                if (gift.stock <= 0) return alert('库存不足');
+                
+                m.points -= gift.points;
+                gift.stock -= 1;
+                
+                this.data.pointsLogs.push({
+                    member_id: m.id,
+                    change: -gift.points,
+                    reason: `兑换: ${gift.name}`,
+                    timestamp: new Date().toISOString()
+                });
+                
+                this.save();
+                this.showToast('兑换成功');
+            },
+            
+            deleteItem(type, id) {
+                if(!confirm('确定删除?')) return;
+                if(type === 'product') this.data.products = this.data.products.filter(x => x.id !== id);
+                if(type === 'gift') this.data.gifts = this.data.gifts.filter(x => x.id !== id);
+                this.save();
+            },
+
+            // --- Debt Mgmt ---
+            renderDebts() {
+                const tbody = document.getElementById('debtListBody');
+                tbody.innerHTML = '';
+                let totalUnpaid = 0;
+                let debtorsSet = new Set();
+
+                // Flatten debts with member info
+                const debtList = this.data.debts.filter(d => d.status === 'unpaid').map(d => {
+                    const m = this.data.members.find(x => x.id === d.member_id);
+                    totalUnpaid += parseFloat(d.amount);
+                    debtorsSet.add(d.member_id);
+                    return { ...d, memberName: m ? m.name : '未知', memberPhone: m ? m.phone : '' };
+                });
+
+                // Update Stats
+                document.getElementById('debt-stat-total').innerText = `¥${totalUnpaid.toFixed(2)}`;
+                document.getElementById('debt-stat-count').innerText = debtorsSet.size;
+
+                debtList.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(d => {
+                    tbody.innerHTML += `<tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px; font-size: 0.8rem; font-weight: bold;">
+                                    ${d.memberName.charAt(0)}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">${d.memberName}</div>
+                                    <div class="small text-muted">${d.memberPhone}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-danger fw-bold">¥${d.amount}</td>
+                        <td class="text-muted">${d.desc}</td>
+                        <td class="small text-muted">${new Date(d.timestamp).toLocaleDateString()}</td>
+                        <td><span class="badge badge-debt">未还</span></td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-success rounded-pill px-3" onclick="app.showDetail(${d.member_id})">办理</button>
+                        </td>
+                    </tr>`;
+                });
+            },
+
+            openQuickDebtModal() {
+                // Populate member list for search
+                const dl = document.getElementById('member-datalist');
+                if (dl) {
+                    dl.innerHTML = '';
+                    this.data.members.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = `${m.name} (${m.phone})`;
+                        dl.appendChild(opt);
+                    });
+                }
+                document.getElementById('form-quick-debt').reset();
+                new bootstrap.Modal(document.getElementById('quickDebtModal')).show();
+            },
+
+            saveQuickDebt() {
+                const identity = document.getElementById('qdebt-identity').value.trim();
+                const amt = parseFloat(document.getElementById('qdebt-amount').value);
+                const desc = document.getElementById('qdebt-desc').value;
+                
+                if (!identity || !amt || !desc) return;
+                
+                // Extract phone if format is "Name (Phone)"
+                let m = null;
+                const phoneMatch = identity.match(/\((\d{11})\)/);
+                if (phoneMatch) {
+                    m = this.data.members.find(x => x.phone === phoneMatch[1]);
+                }
+                
+                // Fallback: Search by Name OR Phone directly
+                if (!m) {
+                    m = this.data.members.find(x => x.phone === identity || x.name === identity);
+                }
+                
+                if (!m) return alert('未找到该会员 (请核对姓名或手机号)，请先注册');
+                
+                // Add Debt
+                m.debt = (m.debt || 0) + amt;
+                this.data.debts.push({
+                    id: Date.now(),
+                    member_id: m.id,
+                    amount: amt,
+                    desc: desc,
+                    status: 'unpaid',
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Add Log (Order as Debt)
+                this.data.orders.push({
+                    id: Date.now(),
+                    member_id: m.id,
+                    amount: amt,
+                    desc: desc,
+                    is_debt: true,
+                    timestamp: new Date().toISOString()
+                });
+                
+                this.save();
+                bootstrap.Modal.getInstance(document.getElementById('quickDebtModal')).hide();
+                document.getElementById('form-quick-debt').reset();
+                this.showToast(`已为 ${m.name} 增加一笔欠款`);
+            },
+
+            exportDebtsCSV() {
+                let csvContent = "\uFEFF欠款人,手机号,欠款金额,备注,记账时间,状态\n";
+                
+                // Exporting all unpaid debts
+                const list = this.data.debts.filter(d => d.status === 'unpaid').sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                list.forEach(d => {
+                    const m = this.data.members.find(x => x.id === d.member_id);
+                    const safe = (str) => str ? `"${str.replace(/"/g, '""')}"` : "";
+                    const row = [
+                        safe(m ? m.name : '未知'),
+                        m ? `'${m.phone}` : '',
+                        d.amount,
+                        safe(d.desc),
+                        new Date(d.timestamp).toLocaleString(),
+                        '未还'
+                    ].join(",");
+                    csvContent += row + "\n";
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.setAttribute("href", URL.createObjectURL(blob));
+                link.setAttribute("download", `debt_report_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                this.showToast('欠款报表导出成功');
+            },
+
+            // --- Data Management ---
+            backupSystem() {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.data));
+                const node = document.createElement('a');
+                node.setAttribute("href", dataStr);
+                node.setAttribute("download", `agri_system_backup_${new Date().toISOString().split('T')[0]}.json`);
+                document.body.appendChild(node);
+                node.click();
+                node.remove();
+                this.showToast('系统数据已备份到本地');
+            },
+
+            importData(input) {
+                const file = input.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        // Basic validation
+                        if (Array.isArray(importedData.members) && Array.isArray(importedData.products)) {
+                            if(confirm('确定要恢复数据吗？当前所有数据将被覆盖！')) {
+                                this.data = importedData;
+                                this.save();
+                                input.value = ''; // Reset input
+                                this.showToast('数据恢复成功，页面即将刷新');
+                                setTimeout(() => location.reload(), 1500);
+                            }
+                        } else {
+                            alert('无效的备份文件格式');
+                        }
+                    } catch (err) {
+                        alert('文件解析失败: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            },
+
+            exportMembersCSV() {
+                // BOM for Excel UTF-8
+                let csvContent = "\uFEFFID,姓名,手机号,地址,生日,身份证号,备注,当前积分,累计积分,当前欠款,注册时间\n";
+                
+                this.data.members.forEach(m => {
+                    const safe = (str) => str ? `"${str.replace(/"/g, '""')}"` : "";
+                    const row = [
+                        m.id,
+                        m.name,
+                        `'${m.phone}`,
+                        safe(m.address),
+                        safe(m.birthday),
+                        `'${m.idcard || ''}`,
+                        safe(m.remark),
+                        m.points,
+                        m.total_points,
+                        m.debt || 0,
+                        m.created_at
+                    ].join(",");
+                    csvContent += row + "\n";
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", `member_list_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                this.showToast('会员表格导出成功');
+            },
+
+            openQuickPurchaseModal() {
+                // Populate member datalist
+                const dl = document.getElementById('member-purchase-datalist');
+                if (dl) {
+                    dl.innerHTML = '';
+                    this.data.members.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = `${m.name} (${m.phone})`;
+                        dl.appendChild(opt);
+                    });
+                }
+
+                // Reset quick purchase state
+                this.data.quickPurchase.memberId = null;
+                this.data.quickPurchase.cart = {};
+
+                // Reset UI
+                document.getElementById('form-quick-purchase')?.reset();
+                const info = document.getElementById('quick-purchase-member-info');
+                if (info) info.style.display = 'none';
+
+                const panel = document.getElementById('quick-purchase-panel');
+                if (panel) {
+                    panel.style.opacity = '.55';
+                    panel.style.pointerEvents = 'none';
+                }
+
+                const discountEl = document.getElementById('quick-purchase-discount');
+                if (discountEl) discountEl.value = '1';
+                const debtEl = document.getElementById('quick-purchase-is-debt');
+                if (debtEl) debtEl.checked = false;
+
+                const searchEl = document.getElementById('quick-product-search-input');
+                if (searchEl) searchEl.value = '';
+
+                // Render empty picklist/total
+                this.renderQuickPurchasePickList();
+                this.updateQuickPurchaseTotal();
+
+                new bootstrap.Modal(document.getElementById('quickPurchaseModal')).show();
+            },
+
+            setQuickPurchaseMember() {
+                const identity = document.getElementById('qpur-identity').value.trim();
+                if (!identity) return;
+
+                // Extract phone if format is "Name (Phone)"
+                let m = null;
+                const phoneMatch = identity.match(/\((\d{11})\)/);
+                if (phoneMatch) {
+                    m = this.data.members.find(x => x.phone === phoneMatch[1]);
+                }
+
+                // Fallback: Search by Name OR Phone directly
+                if (!m) {
+                    m = this.data.members.find(x => x.phone === identity || x.name === identity);
+                }
+
+                if (!m) return alert('未找到该会员 (请从列表中选择或核对姓名/手机号)');
+
+                this.data.quickPurchase.memberId = m.id;
+                this.data.quickPurchase.cart = {};
+
+                // Show selected member info
+                const info = document.getElementById('quick-purchase-member-info');
+                if (info) info.style.display = 'block';
+                document.getElementById('quick-purchase-member-name').innerText = m.name;
+                document.getElementById('quick-purchase-member-phone').innerText = m.phone;
+                document.getElementById('quick-purchase-member-points').innerText = m.points;
+
+                // Enable panel
+                const panel = document.getElementById('quick-purchase-panel');
+                if (panel) {
+                    panel.style.opacity = '1';
+                    panel.style.pointerEvents = 'auto';
+                }
+
+                // Render picklist
+                this.renderQuickPurchasePickList();
+                this.updateQuickPurchaseTotal();
+                this.showToast(`已选择会员：${m.name}`);
+            },
+
+            renderQuickPurchasePickList() {
+                const host = document.getElementById('quick-purchase-product-picklist');
+                if (!host) return;
+
+                const term = (document.getElementById('quick-product-search-input')?.value || '').trim().toLowerCase();
+                host.innerHTML = '';
+
+                const filtered = this.data.products
+                    .filter(p => !term || p.name.toLowerCase().includes(term))
+                    .sort((a,b) => a.name.localeCompare(b.name, 'zh-CN'));
+
+                if (filtered.length === 0) {
+                    host.innerHTML = `<div class="text-center text-muted py-4">未找到商品</div>`;
+                    return;
+                }
+
+                filtered.forEach(p => {
+                    const qty = this.data.quickPurchase.cart[p.id] || 0;
+                    const disabled = p.stock <= 0;
+                    const stockHint = disabled ? `<span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">缺货</span>` : `<span class="badge bg-success bg-opacity-10 text-success rounded-pill">库存 ${p.stock}</span>`;
+
+                    host.innerHTML += `
+                        <div class="d-flex align-items-center justify-content-between p-3 mb-2 rounded-4 qp-row" style="background: rgba(255,255,255,0.7); border: 1px solid var(--border-color);">
+                            <div style="min-width: 0;" class="pe-3">
+                                <div class="fw-bold text-dark text-truncate">${p.name}</div>
+                                <div class="small text-muted">¥${p.price.toFixed(2)} <span class="mx-2">•</span> ${stockHint}</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-sm btn-outline-secondary" style="padding: 0.25rem 0.7rem;" onclick="app.adjustQuickPickQty(${p.id}, -1)" ${disabled ? 'disabled' : ''}>-</button>
+                                <input 
+                                    id="qpick-qty-${p.id}"
+                                    class="form-control form-control-sm text-center" 
+                                    style="width: 72px; padding: 0.45rem 0.5rem;" 
+                                    inputmode="numeric" 
+                                    type="number" 
+                                    min="0" 
+                                    max="${p.stock}" 
+                                    value="${qty}" 
+                                    ${disabled ? 'disabled' : ''}
+                                    oninput="app.setQuickPickQty(${p.id}, this.value)">
+                                <button class="btn btn-sm btn-outline-secondary" style="padding: 0.25rem 0.7rem;" onclick="app.adjustQuickPickQty(${p.id}, 1)" ${disabled ? 'disabled' : ''}>+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                this.updateQuickPurchaseTotal();
+            },
+
+            setQuickPickQty(pid, val) {
+                const p = this.data.products.find(x => x.id === pid);
+                if (!p) return;
+
+                let qty = parseInt(val);
+                if (isNaN(qty) || qty < 0) qty = 0;
+                if (qty > p.stock) qty = p.stock;
+
+                if (qty === 0) delete this.data.quickPurchase.cart[pid];
+                else this.data.quickPurchase.cart[pid] = qty;
+
+                this.updateQuickPurchaseTotal();
+            },
+
+            adjustQuickPickQty(pid, delta) {
+                const p = this.data.products.find(x => x.id === pid);
+                if (!p) return;
+
+                const current = this.data.quickPurchase.cart[pid] || 0;
+                let next = current + delta;
+                if (next < 0) next = 0;
+                if (next > p.stock) next = p.stock;
+
+                if (next === 0) delete this.data.quickPurchase.cart[pid];
+                else this.data.quickPurchase.cart[pid] = next;
+
+                const input = document.getElementById(`qpick-qty-${pid}`);
+                if (input) input.value = next;
+
+                this.updateQuickPurchaseTotal();
+            },
+
+            calcRawSubtotalFromQuickCart() {
+                let subtotal = 0;
+                for (const [pidStr, qty] of Object.entries(this.data.quickPurchase.cart || {})) {
+                    const pid = parseInt(pidStr);
+                    const p = this.data.products.find(x => x.id === pid);
+                    if (!p) continue;
+                    subtotal += p.price * (parseInt(qty) || 0);
+                }
+                return subtotal;
+            },
+
+            updateQuickPurchaseTotal() {
+                const totalDisplay = document.getElementById('quick-purchase-total-display');
+                if (!totalDisplay) return;
+
+                const discountEl = document.getElementById('quick-purchase-discount');
+                const discount = discountEl ? parseFloat(discountEl.value) : 1;
+
+                const subtotal = this.calcRawSubtotalFromQuickCart();
+                const finalTotal = subtotal * discount;
+
+                if (discount < 1 && subtotal > 0) {
+                    totalDisplay.innerHTML = `¥${finalTotal.toFixed(2)} <span class="text-muted small text-decoration-line-through ms-2">¥${subtotal.toFixed(2)}</span>`;
+                } else {
+                    totalDisplay.innerHTML = `¥${finalTotal.toFixed(2)}`;
+                }
+            },
+
+            confirmQuickPurchase() {
+                const memberId = this.data.quickPurchase.memberId;
+                const m = this.data.members.find(x => x.id === memberId);
+                if (!m) return alert('请先确认会员');
+
+                const cart = this.data.quickPurchase.cart || {};
+                const entries = Object.entries(cart).filter(([,qty]) => (parseInt(qty)||0) > 0);
+                if (entries.length === 0) return alert('请至少选择一个商品并填写数量');
+
+                const isDebt = document.getElementById('quick-purchase-is-debt').checked;
+                const discountEl = document.getElementById('quick-purchase-discount');
+                const discount = discountEl ? parseFloat(discountEl.value) : 1;
+
+                // 校验库存 + 计算金额 + 生成描述
+                let subtotal = 0;
+                const descArr = [];
+
+                for (const [pidStr, qtyVal] of entries) {
+                    const pid = parseInt(pidStr);
+                    const qty = parseInt(qtyVal) || 0;
+                    const p = this.data.products.find(x => x.id === pid);
+                    if (!p) continue;
+
+                    if (qty > p.stock) {
+                        return alert(`${p.name} 库存不足（库存:${p.stock}，选择:${qty}）`);
+                    }
+
+                    subtotal += p.price * qty;
+                    descArr.push(`${p.name}x${qty}`);
+                }
+
+                const totalAmt = subtotal * discount;
+                let desc = descArr.join(', ');
+                if (discount < 1) desc += ` (${Math.round(discount * 100)}折)`;
+
+                // 扣减库存（确认结算才扣）
+                for (const [pidStr, qtyVal] of entries) {
+                    const pid = parseInt(pidStr);
+                    const qty = parseInt(qtyVal) || 0;
+                    const p = this.data.products.find(x => x.id === pid);
+                    if (p) p.stock -= qty;
+                }
+
+                const points = Math.floor(totalAmt / 10);
+                m.points += points;
+                m.total_points += points;
+                this.data.pointsLogs.push({member_id: m.id, change: points, reason: '消费获赠', timestamp: new Date().toISOString()});
+
+                if (isDebt) {
+                    m.debt = (m.debt || 0) + totalAmt;
+                    this.data.debts.push({
+                        id: Date.now(),
+                        member_id: m.id,
+                        amount: totalAmt,
+                        desc: desc,
+                        status: 'unpaid',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                this.data.orders.push({
+                    id: Date.now(),
+                    member_id: m.id,
+                    amount: totalAmt,
+                    desc: desc,
+                    is_debt: isDebt,
+                    timestamp: new Date().toISOString()
+                });
+
+                // 清空弹窗状态
+                this.data.quickPurchase.cart = {};
+                this.updateQuickPurchaseTotal();
+                this.renderQuickPurchasePickList();
+
+                this.save();
+
+                // 若当前在仪表盘，刷新统计与动态
+                if (document.getElementById('view-dashboard')?.classList.contains('active')) {
+                    this.renderDashboard();
+                }
+
+                // 更新顶部会员信息的积分显示
+                const ptsEl = document.getElementById('quick-purchase-member-points');
+                if (ptsEl) ptsEl.innerText = m.points;
+
+                this.showToast(`结算成功！${m.name} 实收 ¥${totalAmt.toFixed(2)}，获得 ${points} 积分`);
+            },
+
+            showToast(msg) {
+                document.getElementById('toast-msg').innerText = msg;
+                new bootstrap.Toast(document.getElementById('liveToast')).show();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
